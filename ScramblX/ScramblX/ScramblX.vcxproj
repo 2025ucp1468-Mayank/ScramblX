@@ -151,6 +151,7 @@
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\ShaderClass.cpp" />
+    <ClCompile Include="Renderer\SkyBox.cpp" />
     <ClCompile Include="Renderer\TextureClass.cpp" />
     <ClCompile Include="ScramblXEngine.cpp" />
   </ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\ShaderClass.h" />
+    <ClInclude Include="Renderer\SkyBox.h" />
     <ClInclude Include="Renderer\TextureClass.h" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +169,8 @@
     <None Include="Assets\Models\lion_head_4k\lion_head_4k.gltf" />
     <None Include="Assets\Shaders\model.frag" />
     <None Include="Assets\Shaders\model.vert" />
+    <None Include="Assets\Shaders\skybox.frag" />
+    <None Include="Assets\Shaders\skybox.vert" />
     <None Include="x64\Debug\assimp-vc145-mtd.dll" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +190,12 @@
     <Image Include="Assets\Models\lion_head_4k\textures\lion_head_arm_4k.jpg" />
     <Image Include="Assets\Models\lion_head_4k\textures\lion_head_diff_4k.jpg" />
     <Image Include="Assets\Models\lion_head_4k\textures\lion_head_nor_gl_4k.jpg" />
+    <Image Include="Assets\Models\skybox\back.jpg" />
+    <Image Include="Assets\Models\skybox\bottom.jpg" />
+    <Image Include="Assets\Models\skybox\front.jpg" />
+    <Image Include="Assets\Models\skybox\left.jpg" />
+    <Image Include="Assets\Models\skybox\right.jpg" />
+    <Image Include="Assets\Models\skybox\top.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -33,6 +33,9 @@
     <ClCompile Include="Renderer\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer\ShaderClass.h">
@@ -50,6 +53,9 @@
     <ClInclude Include="Core\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\model.vert" />
@@ -60,6 +66,8 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Assets\Models\lion_head_4k\lion_head_4k.gltf" />
+    <None Include="Assets\Shaders\skybox.vert" />
+    <None Include="Assets\Shaders\skybox.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Models\ferrari-laferrari-wwwvecarzcom\textures\gltf_embedded_0.png">
@@ -108,6 +116,24 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Models\lion_head_4k\lion_head_nor_gl_4k.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\bottom.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Models\skybox\top.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
