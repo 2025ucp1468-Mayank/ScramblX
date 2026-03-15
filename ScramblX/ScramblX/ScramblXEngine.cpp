@@ -1,30 +1,56 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 
-const char* vertexShaderSource = R"(
-#version 330 core
+#include "Renderer/ShaderClass.h"
+#include "Renderer/Model.h"
+#include "Core/Camera.h"
 
-layout (location = 0) in vec3 aPos;
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
-void main(){
-	gl_Position = vec4(aPos, 1.0);
+Camera camera(glm::vec3(0.0f, 1.0f, 5.0f));
+float lastX = SCR_WIDTH / 2, lastY = SCR_HEIGHT / 2;
+bool firstMouse = true;
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+	float xpos = static_cast<float>(xposIn);
+	float ypos = static_cast<float>(yposIn);
+
+	if (firstMouse) {
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = ypos - lastY;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	camera.PocessMouseMovement(xoffset, yoffset);
 }
-)";
-
-const char* fragmentShaderSource = R"(
-#version 330 core
-
-out vec4 FragColor;
-
-void main(){
-	FragColor = vec4(0.462745f, 0.823529f, 0.858823f, 1.0f);
-}
-)";
 
 void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.ProcessKeybord(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.ProcessKeybord(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.ProcessKeybord(LEFT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.ProcessKeybord(RIGHT, deltaTime);
 	}
 }
 
@@ -37,77 +63,71 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 4); // 4 samples is the industry standard
 
-	//Create a window object
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "ScramblX", NULL, NULL);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "ScramblX", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
+	if (!window) {
+		std::cout << "Failed to create window\n" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cout << "Failed to initialize GLAD\n";
 		return -1;
 	}
 
-	//ViewPort def
-	glViewport(0, 0, 800, 600);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glEnable(GL_MULTISAMPLE);
 
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
-	};
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//VBO and VAO init and binding
-	unsigned int VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	Shader shader("Assets/Shaders/model.vert", "Assets/Shaders/model.frag");
 
-	//Compiling Shaders
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
+	Model koenigsegg("Assets/Models/2020-koenigsegg-jesko/source/Final_Model/Final_Model.fbx");
+	glDepthFunc(GL_LESS);
 
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	//Render loop
 	while (!glfwWindowShouldClose(window)) {
+		glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDisable(GL_CULL_FACE);
+
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		processInput(window);
 
-		glClearColor(0.968627f, 0.964706f, 0.898039f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		
+		shader.use();
+
+		shader.setVec3("viewPos", camera.Position);
+		shader.setVec3("lightPos", glm::vec3(100.0f, 100.0f, 100.0f));
+		shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(
+			glm::radians(camera.Zoom),
+			(float)SCR_WIDTH / SCR_HEIGHT,
+			0.1f,
+			100000.0f
+		);
+		shader.setMat4("view", view);
+		shader.setMat4("projection", projection);
+
+		glm::mat4 car2pos = glm::mat4(1.0f);
+		car2pos = glm::translate(car2pos, glm::vec3(-10.0f, 0.0f, 0.0f));
+		koenigsegg.Draw(shader.ID, car2pos);
+
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	glfwTerminate();
-	return 0;
-}												 
+}

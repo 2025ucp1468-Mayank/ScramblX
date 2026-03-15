@@ -118,7 +118,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;assimp-vc145-mtd.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\Externals\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -136,13 +136,29 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;assimp-vc145-mtd.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\Externals\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Externals\src\glad.c" />
+    <ClCompile Include="Renderer\Mesh.cpp" />
+    <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\ShaderClass.cpp" />
+    <ClCompile Include="Renderer\TextureClass.cpp" />
     <ClCompile Include="ScramblXEngine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\Camera.h" />
+    <ClInclude Include="Renderer\Mesh.h" />
+    <ClInclude Include="Renderer\Model.h" />
+    <ClInclude Include="Renderer\ShaderClass.h" />
+    <ClInclude Include="Renderer\TextureClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\model.frag" />
+    <None Include="Assets\Shaders\model.vert" />
+    <None Include="x64\Debug\assimp-vc145-mtd.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
