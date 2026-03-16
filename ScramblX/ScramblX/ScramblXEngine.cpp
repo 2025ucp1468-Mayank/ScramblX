@@ -97,6 +97,7 @@ int main() {
 
 	Shader shader("Assets/Shaders/model.vert", "Assets/Shaders/model.frag");
 	Shader skyboxShader("Assets/Shaders/skybox.vert", "Assets/Shaders/skybox.frag");
+	Shader reflect("Assets/Shaders/reflect.vert", "Assets/Shaders/reflect.frag");
 
 	float skyboxVertices[] = {
 		// positions          
@@ -202,14 +203,26 @@ int main() {
 		car1pos = glm::translate(car1pos, glm::vec3(2.0f, 0.0f, 0.0f));
 		car1pos = glm::rotate(car1pos, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		koenigsegg.Draw(shader.ID, car1pos);
-
-		glm::mat4 car2pos = glm::mat4(1.0f);
-		car2pos = glm::translate(car2pos, glm::vec3(-2.0f, 0.0f, 0.0f));
-		ferarri.Draw(shader.ID, car2pos);
-
+		
 		glm::mat4 lionpos = glm::mat4(1.0f);
 		lionpos = glm::translate(lionpos, glm::vec3(0.0f, 2.0f, 0.0f));
 		lionHead.Draw(shader.ID, lionpos);
+
+		reflect.use();
+
+		reflect.setVec3("cameraPos", camera.Position);
+		reflect.setMat4("view", view);
+		reflect.setMat4("projection", projection);
+		
+
+		glActiveTexture(GL_TEXTURE10); // Use a unit unlikely to be used by the Model class
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		reflect.setInt("skybox", 10);
+
+		glm::mat4 car2pos = glm::mat4(1.0f);
+		car2pos = glm::translate(car2pos, glm::vec3(-2.0f, 0.0f, 0.0f));
+		ferarri.Draw(reflect.ID, car2pos);
+
 
 		glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
 		skyboxShader.use();
@@ -223,6 +236,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS);
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
